@@ -1,31 +1,22 @@
-package goplayersserver
+package server
 
 import (
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
+
+	"github.com/joaquimrafael/go-players-server/domain"
 )
 
 const jsonContentType = "application/json"
 
-type PlayerStore interface {
-	GetPlayerScore(name string) int
-	RecordWin(name string)
-	GetLeague() []Player
-}
-
 type PlayerServer struct {
-	store PlayerStore
+	store domain.PlayerStore
 	http.Handler
 }
 
-type Player struct {
-	Name string
-	Wins int
-}
-
-func NewPlayerServer(store PlayerStore) *PlayerServer {
+func NewPlayerServer(store domain.PlayerStore) *PlayerServer {
 	p := new(PlayerServer)
 
 	p.store = store
@@ -59,7 +50,8 @@ func (p *PlayerServer) showScore(w http.ResponseWriter, player string) {
 	score := p.store.GetPlayerScore(player)
 
 	if score == 0 {
-		w.WriteHeader(http.StatusNotFound)
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
 	}
 
 	fmt.Fprint(w, score)
