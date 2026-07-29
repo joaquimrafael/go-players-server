@@ -22,8 +22,8 @@ func TestFileSystemStore(t *testing.T) {
 		got := store.GetLeague()
 
 		want := []Domain.Player{
-			{Name: "Cleo", Wins: 10},
 			{Name: "Chris", Wins: 33},
+			{Name: "Cleo", Wins: 10},
 		}
 
 		assertLeague(t, got, want)
