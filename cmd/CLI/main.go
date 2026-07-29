@@ -1,11 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"log"
-	"net/http"
+	"os"
 
+	"github.com/joaquimrafael/go-players-server/domain"
 	"github.com/joaquimrafael/go-players-server/filesystem"
-	"github.com/joaquimrafael/go-players-server/server"
 )
 
 const dbFileName = "game.db.json"
@@ -18,9 +19,7 @@ func main() {
 	}
 	defer close()
 
-	server := server.NewPlayerServer(store)
-
-	if err := http.ListenAndServe(":5500", server); err != nil {
-		log.Fatalf("could not listen on port 5500 %v", err)
-	}
+	fmt.Println("Let's play poker")
+	fmt.Println("Type {Name} wins to record a win")
+	domain.NewCLI(store, os.Stdin).PlayPoker()
 }
