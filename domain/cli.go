@@ -35,7 +35,7 @@ func (cli *CLI) PlayPoker() {
 		return
 	}
 
-	cli.game.Start(numberOfPlayers)
+	cli.game.Start(numberOfPlayers, cli.out)
 
 	winnerInput := cli.readLine()
 	winner := extractWinner(winnerInput)
@@ -50,4 +50,24 @@ func extractWinner(userInput string) string {
 func (cli *CLI) readLine() string {
 	cli.in.Scan()
 	return cli.in.Text()
+}
+
+type GameSpy struct {
+	StartCalled bool
+	StartedWith int
+	BlindAlert  []byte
+
+	FinishedCalled bool
+	FinishedWith   string
+}
+
+func (g *GameSpy) Start(numberOfPlayers int, out io.Writer) {
+	g.StartCalled = true
+	g.StartedWith = numberOfPlayers
+	out.Write(g.BlindAlert)
+}
+
+func (g *GameSpy) Finish(winner string) {
+	g.FinishedCalled = true
+	g.FinishedWith = winner
 }

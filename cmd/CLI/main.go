@@ -21,7 +21,7 @@ func main() {
 
 	fmt.Println("Let's play poker")
 	fmt.Println("Type {Name} wins to record a win")
-	game := domain.NewGame(domain.BlindAlerterFunc(domain.StdOutAlerter), store)
+	game := domain.NewTexasHoldem(domain.BlindAlerterFunc(domain.Alerter), store)
 	cli := domain.NewCLI(os.Stdin, os.Stdout, game)
 	cli.PlayPoker()
 }

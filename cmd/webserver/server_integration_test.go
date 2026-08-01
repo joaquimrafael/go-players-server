@@ -19,7 +19,10 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 	database, cleanDatabase := createTempFile(t, `[]`)
 	defer cleanDatabase()
 	store, err := filesystem.NewFileSystemPlayerStore(database)
-	server := Server.NewPlayerServer(store)
+	assertNoError(t, err)
+	game := domain.NewTexasHoldem(domain.BlindAlerterFunc(domain.Alerter), store)
+	server, err := Server.NewPlayerServer(store, game)
+	assertNoError(t, err)
 	player := "Pepper"
 
 	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
@@ -30,8 +33,6 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 		response := httptest.NewRecorder()
 		server.ServeHTTP(response, newGetScoreRequest(player))
 		assertStatus(t, response.Code, http.StatusOK)
-		assertNoError(t, err)
-
 		assertResponseBody(t, response.Body.String(), "3")
 	})
 
@@ -39,8 +40,6 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 		response := httptest.NewRecorder()
 		server.ServeHTTP(response, newLeagueRequest())
 		assertStatus(t, response.Code, http.StatusOK)
-		assertNoError(t, err)
-
 		got := getLeagueFromResponse(t, response.Body)
 		want := []domain.Player{
 			{Name: "Pepper", Wins: 3},
